@@ -57,11 +57,10 @@ export default function LandingPage() {
       <footer className="mt-16 text-center text-black text-base">
         <p>© 2024 Event App. All rights reserved.</p>
         <a
-          href="https://github.com/abhi-yo
-          /event-app"
+          href="mailto:akshatsing11@gmail.com"
           className="text-black hover:underline"
         >
-          View on GitHub
+          Drop a Mail
         </a>
       </footer>
     </div>
