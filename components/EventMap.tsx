@@ -34,10 +34,10 @@ export default function EventMap({ events, onLocationSelect, selectedEvent }: Ev
       try {
         await loader.load();
         if (mapRef.current && !map) {
-          const kolkataCoordinates = { lat: 22.5726, lng: 88.3639 };
+          const kolkataCoordinates = { lat: 20, lng: 0 };
           const newMap = new google.maps.Map(mapRef.current, {
             center: kolkataCoordinates,
-            zoom: 9,
+            zoom: 2,
           });
           setMap(newMap);
 
