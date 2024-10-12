@@ -73,8 +73,8 @@ export default function EventMap({ events, onLocationSelect, selectedEvent }: Ev
           title: event.title,
         });
         marker.addListener("click", () => {
-          map.setCenter(marker.getPosition()!);
-          map.setZoom(12);
+          const url = `https://www.google.com/maps/dir/?api=1&destination=${event.location.coordinates[1]},${event.location.coordinates[0]}`;
+          window.open(url, '_blank');
         });
         return marker;
       });
