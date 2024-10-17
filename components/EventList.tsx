@@ -15,7 +15,11 @@ interface Event {
   };
 }
 
-export default function EventList() {
+interface EventListProps {
+  onEventSelect?: (event: Event) => void;
+}
+
+export default function EventList({ onEventSelect }: EventListProps) {
   const [events, setEvents] = useState<Event[]>([]);
   const [error, setError] = useState("");
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
@@ -37,6 +41,9 @@ export default function EventList() {
 
   const handleEventClick = (event: Event) => {
     setSelectedEventId(selectedEventId === event._id ? null : event._id);
+    if (onEventSelect) {
+      onEventSelect(event);
+    }
   };
 
   if (error) {

@@ -1,7 +1,17 @@
-import { Server as NetServer } from 'http'
-import { Redis } from 'ioredis'
-import { NextApiRequest } from 'next'
-import { Server as ServerIO } from 'socket.io'
+import { Server as NetServer } from 'http';
+import { Redis } from 'ioredis';
+import { NextApiRequest, NextApiResponse } from 'next';
+import { Server as ServerIO } from 'socket.io';
+
+type SocketServer = NetServer & {
+  io?: ServerIO;
+};
+
+type SocketWithIO = NextApiResponse & {
+  socket: {
+    server: SocketServer;
+  };
+};
 
 export const config = {
   api: {
@@ -11,12 +21,12 @@ export const config = {
 
 const redis = new Redis(process.env.REDIS_URL || 'redis://localhost:6379')
 
-const SocketHandler = (req: NextApiRequest, res: any) => {
+const SocketHandler = (req: NextApiRequest, res: SocketWithIO) => {
   if (!res.socket.server.io) {
-    const httpServer: NetServer = res.socket.server as any
+    const httpServer: NetServer = res.socket.server;
     const io = new ServerIO(httpServer, {
       path: '/api/socketio',
-    })
+    });
 
     io.on('connection', (socket) => {
       socket.on('join', (eventId: string) => {
@@ -57,7 +67,7 @@ const SocketHandler = (req: NextApiRequest, res: any) => {
 
     res.socket.server.io = io
   }
-  res.end()
+  res.end();
 }
 
 export default SocketHandler
