@@ -2,29 +2,35 @@
 import { Poppins } from "next/font/google";
 import Link from "next/link";
 import { AuthProvider, useAuth } from '../contexts/AuthContext';
+import { SocketProvider } from '../contexts/SocketContext';
 import "./globals.css";
-
 
 const poppins = Poppins({ weight: ['400', '600', '700'], subsets: ["latin"] });
 
 function NavBar() {
   const { user, logout } = useAuth();
   return (
-    <nav className="bg-gray-100 p-4 fixed top-0 left-0 right-0 z-10">
-      <div className="container mx-auto flex justify-between items-center">
-        <div>
-          <Link href="/" className="text-black hover:underline mr-6">Home</Link>
-          <Link href="/events" className="text-black hover:underline mr-6">Events</Link>
-          {user && <Link href="/create-event" className="text-black hover:underline">Create Event</Link>}
+    <nav className="bg-white border-b border-gray-200 py-4 fixed top-0 left-0 right-0 z-10 shadow-sm">
+      <div className="container mx-auto flex justify-between items-center px-4">
+        <div className="flex items-center space-x-5">
+          <Link href="/" className="text-gray-800 hover:text-black transition-colors duration-200 font-medium">Home</Link>
+          <Link href="/events" className="text-gray-800 hover:text-black transition-colors duration-200 font-medium">Events</Link>
+          {user && (
+            <Link href="/create-event" className="text-gray-800 hover:text-black transition-colors duration-200 font-medium">
+              Create Event
+            </Link>
+          )}
         </div>
         <div>
           {user ? (
-            <>
-              <span className="mr-4">{user.email}</span>
-              <button onClick={logout} className="text-black hover:underline">Logout</button>
-            </>
+            <div className="flex items-center space-x-6">
+              <span className="text-gray-600">{user.email}</span>
+              <button onClick={logout} className="text-gray-800 hover:text-black transition-colors duration-200 font-medium">
+                Logout
+              </button>
+            </div>
           ) : (
-            <Link href="/login" className="text-black hover:underline">Login</Link>
+            <Link href="/login" className="text-gray-800 hover:text-black transition-colors duration-200 font-medium">Login</Link>
           )}
         </div>
       </div>
@@ -41,8 +47,10 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${poppins.className} pt-16`}>
         <AuthProvider>
-          <NavBar />
-          {children}
+          <SocketProvider>
+            <NavBar />
+            {children}
+          </SocketProvider>
         </AuthProvider>
       </body>
     </html>
