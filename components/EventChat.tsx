@@ -21,7 +21,7 @@ interface EventChatProps {
   eventId: string;
 }
 
-const MESSAGE_EXPIRATION_TIME = 30 * 1000; // 30 seconds in milliseconds
+const MESSAGE_EXPIRATION_TIME = 30 * 1000;
 
 const EventChat: React.FC<EventChatProps> = ({ eventId }) => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -76,7 +76,7 @@ const EventChat: React.FC<EventChatProps> = ({ eventId }) => {
       );
     };
 
-    const intervalId = setInterval(checkMessageExpiration, 5000); // Check every 5 seconds
+    const intervalId = setInterval(checkMessageExpiration, 5000);
 
     return () => clearInterval(intervalId);
   }, []);

@@ -17,57 +17,53 @@ export const config = {
   api: {
     bodyParser: false,
   },
-}
+};
 
-const redis = new Redis(process.env.REDIS_URL || 'redis://localhost:6379')
+const redis = new Redis(process.env.REDIS_URL || 'redis://localhost:6379');
 
 const SocketHandler = (req: NextApiRequest, res: SocketWithIO) => {
   if (!res.socket.server.io) {
-    const httpServer: NetServer = res.socket.server;
-    const io = new ServerIO(httpServer, {
+    console.log('Initializing Socket.IO');
+    const io = new ServerIO(res.socket.server as any, {
       path: '/api/socketio',
+      addTrailingSlash: false,
     });
 
     io.on('connection', (socket) => {
+      console.log('New connection:', socket.id);
+
       socket.on('join', (eventId: string) => {
         socket.join(eventId);
-        console.log(`User joined event: ${eventId}`);
+        console.log(`User ${socket.id} joined event: ${eventId}`);
       });
 
       socket.on('leave', (eventId: string) => {
         socket.leave(eventId);
-        console.log(`User left event: ${eventId}`);
+        console.log(`User ${socket.id} left event: ${eventId}`);
       });
 
       socket.on('message', async ({ eventId, message }) => {
-        const redisKey = `event:${eventId}:messages`
-        await redis.lpush(redisKey, JSON.stringify(message))
-        await redis.expire(redisKey, 30) // Set expiry to 30 seconds
-        io.to(eventId).emit('message', message)
-
+        const redisKey = `event:${eventId}:messages`;
+        await redis.lpush(redisKey, JSON.stringify(message));
+        await redis.expire(redisKey, 30);
+        io.to(eventId).emit('message', message);
         console.log(`Message added to event ${eventId}. Expiration set to 30 seconds.`);
 
-        // Log message count every 10 seconds
-        setTimeout(async () => {
-          const messageCount = await redis.llen(redisKey)
-          console.log(`Event ${eventId} message count after 10 seconds: ${messageCount}`)
-        }, 10000)
+        [10, 20, 30].forEach((seconds) => {
+          setTimeout(async () => {
+            const messageCount = await redis.llen(redisKey);
+            console.log(`Event ${eventId} message count after ${seconds} seconds: ${messageCount}`);
+          }, seconds * 1000);
+        });
+      });
+    });
 
-        setTimeout(async () => {
-          const messageCount = await redis.llen(redisKey)
-          console.log(`Event ${eventId} message count after 20 seconds: ${messageCount}`)
-        }, 20000)
-
-        setTimeout(async () => {
-          const messageCount = await redis.llen(redisKey)
-          console.log(`Event ${eventId} message count after 30 seconds: ${messageCount}`)
-        }, 30000)
-      })
-    })
-
-    res.socket.server.io = io
+    res.socket.server.io = io;
+  } else {
+    console.log('Socket.IO already initialized');
   }
-  res.end();
-}
 
-export default SocketHandler
+  res.end();
+};
+
+export default SocketHandler;
