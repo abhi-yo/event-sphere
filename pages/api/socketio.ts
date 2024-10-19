@@ -1,26 +1,17 @@
-import type { Server as HTTPServer } from 'http'
-import { Redis } from 'ioredis'
-import type { Socket as NetSocket } from 'net'
-import type { NextApiRequest, NextApiResponse } from 'next'
-import type { Server as IOServer } from 'socket.io'
-import { Server } from 'socket.io'
+import { Server as NetServer } from 'http';
+import { Redis } from 'ioredis';
+import { NextApiRequest, NextApiResponse } from 'next';
+import { Server as ServerIO } from 'socket.io';
 
-interface ServerToIOServer extends HTTPServer {
-  io?: IOServer
-}
+type SocketServer = NetServer & {
+  io?: ServerIO;
+};
 
-interface SocketNextApiResponse extends NextApiResponse {
-  socket: NetSocket & {
-    server: ServerToIOServer
-  }
-}
-
-interface Message {
-  id: string;
-  text: string;
-  userId: string;
-  timestamp: number;
-}
+type SocketWithIO = NextApiResponse & {
+  socket: {
+    server: SocketServer;
+  };
+};
 
 export const config = {
   api: {
@@ -30,49 +21,53 @@ export const config = {
 
 const redis = new Redis(process.env.REDIS_URL || 'redis://localhost:6379')
 
-const SocketHandler = (req: NextApiRequest, res: SocketNextApiResponse): void => {
+const SocketHandler = (req: NextApiRequest, res: SocketWithIO) => {
   if (!res.socket.server.io) {
-    console.log('Initializing Socket.IO')
-    const io = new Server(res.socket.server, {
+    const httpServer: NetServer = res.socket.server;
+    const io = new ServerIO(httpServer, {
       path: '/api/socketio',
-      addTrailingSlash: false,
-    })
+    });
 
     io.on('connection', (socket) => {
-      console.log('New connection:', socket.id)
-
       socket.on('join', (eventId: string) => {
-        socket.join(eventId)
-        console.log(`User ${socket.id} joined event: ${eventId}`)
-      })
+        socket.join(eventId);
+        console.log(`User joined event: ${eventId}`);
+      });
 
       socket.on('leave', (eventId: string) => {
-        socket.leave(eventId)
-        console.log(`User ${socket.id} left event: ${eventId}`)
-      })
+        socket.leave(eventId);
+        console.log(`User left event: ${eventId}`);
+      });
 
-      socket.on('message', async ({ eventId, message }: { eventId: string; message: Message }) => {
+      socket.on('message', async ({ eventId, message }) => {
         const redisKey = `event:${eventId}:messages`
         await redis.lpush(redisKey, JSON.stringify(message))
-        await redis.expire(redisKey, 30)
+        await redis.expire(redisKey, 30) // Set expiry to 30 seconds
         io.to(eventId).emit('message', message)
-        console.log(`Message added to event ${eventId}. Expiration set to 30 seconds.`)
 
-        ;[10, 20, 30].forEach((seconds) => {
-          setTimeout(async () => {
-            const messageCount = await redis.llen(redisKey)
-            console.log(`Event ${eventId} message count after ${seconds} seconds: ${messageCount}`)
-          }, seconds * 1000)
-        })
+        console.log(`Message added to event ${eventId}. Expiration set to 30 seconds.`);
+
+        // Log message count every 10 seconds
+        setTimeout(async () => {
+          const messageCount = await redis.llen(redisKey)
+          console.log(`Event ${eventId} message count after 10 seconds: ${messageCount}`)
+        }, 10000)
+
+        setTimeout(async () => {
+          const messageCount = await redis.llen(redisKey)
+          console.log(`Event ${eventId} message count after 20 seconds: ${messageCount}`)
+        }, 20000)
+
+        setTimeout(async () => {
+          const messageCount = await redis.llen(redisKey)
+          console.log(`Event ${eventId} message count after 30 seconds: ${messageCount}`)
+        }, 30000)
       })
     })
 
     res.socket.server.io = io
-  } else {
-    console.log('Socket.IO already initialized')
   }
-
-  res.end()
+  res.end();
 }
 
 export default SocketHandler
