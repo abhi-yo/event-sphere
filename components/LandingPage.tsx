@@ -71,7 +71,7 @@ export default function LandingPage() {
           <div className="flex space-x-8">
             <a href="#" className="hover:text-gray-300 transition-colors duration-300">Terms</a>
             <a href="#" className="hover:text-gray-300 transition-colors duration-300">Privacy</a>
-            <a href="#" className="hover:text-gray-300 transition-colors duration-300">Contact</a>
+            <a href="mailto:akshatsing11@gmail.com" className="hover:text-gray-300 transition-colors duration-300">Contact</a>
           </div>
         </div>
       </footer>
