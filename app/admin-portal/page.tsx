@@ -2,18 +2,36 @@
 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { useAuth } from '../../contexts/AuthContext';
+import { signIn } from 'next-auth/react';
+import Link from 'next/link'; // Add Link import
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const { login } = useAuth();
+  const [error, setError] = useState('');
   const router = useRouter();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    login(email, password);
-    router.push('/');
+    setError(''); // Clear any existing errors
+    
+    try {
+      const result = await signIn('credentials', {
+        email,
+        password,
+        redirect: false
+      });
+
+      if (result?.error) {
+        setError(result.error);
+      } else {
+        router.push('/');
+        router.refresh();
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      setError('An error occurred during login');
+    }
   };
 
   return (
@@ -22,6 +40,11 @@ export default function LoginPage() {
         <h3 className="text-2xl font-bold text-center">Login to your account</h3>
         <form onSubmit={handleSubmit}>
           <div className="mt-4">
+            {error && (
+              <div className="text-red-500 text-sm mb-4">
+                {error}
+              </div>
+            )}
             <div>
               <label className="block" htmlFor="email">Email</label>
               <input
@@ -44,8 +67,19 @@ export default function LoginPage() {
                 required
               />
             </div>
-            <div className="flex items-baseline justify-between">
-              <button className="px-6 py-2 mt-4 text-white bg-blue-600 rounded-lg hover:bg-blue-900" type="submit">Login</button>
+            <div className="flex flex-col items-baseline justify-between mt-4">
+              <button 
+                className="w-full px-6 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-900"
+                type="submit"
+              >
+                Login
+              </button>
+              <Link 
+                href="/signup" 
+                className="text-sm text-blue-600 hover:underline mt-4"
+              >
+                Don't have an account? Sign up
+              </Link>
             </div>
           </div>
         </form>

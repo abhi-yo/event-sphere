@@ -1,44 +1,41 @@
 "use client";
 
-import React, { createContext, ReactNode, useContext, useState } from 'react';
-
-interface User {
-  email: string;
-}
+import { SessionProvider, useSession, signIn, signOut } from "next-auth/react";
+import { createContext, useContext, ReactNode } from 'react';
 
 interface AuthContextType {
-  user: User | null;
+  user: any;
   isAuthenticated: boolean;
-  login: (email: string, password: string) => void;
-  logout: () => void;
+  login: (email: string, password: string) => Promise<any>;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
-
-  const login = (email: string, password: string) => {
-    if (email === 'admin@example.com' && password === 'password') {
-      setUser({ email });
-    }
-  };
-
-  const logout = () => {
-    setUser(null);
-  };
-
-  return (
-    <AuthContext.Provider value={{ user, isAuthenticated: !!user, login, logout }}>
-      {children}
-    </AuthContext.Provider>
-  );
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  return <SessionProvider>{children}</SessionProvider>;
 };
 
 export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
+  const { data: session } = useSession();
+  
+  const login = async (email: string, password: string) => {
+    const result = await signIn("credentials", {
+      email,
+      password,
+      redirect: false,
+    });
+    return result;
+  };
+
+  const logout = async () => {
+    await signOut({ redirect: true, callbackUrl: "/login" });
+  };
+
+  return {
+    user: session?.user || null,
+    isAuthenticated: !!session,
+    login,
+    logout,
+  };
 };
