@@ -8,18 +8,18 @@ import "./globals.css";
 
 const poppins = Poppins({ weight: ['400', '600', '700'], subsets: ["latin"] });
 
-// Separate NavBar into its own client component
 function NavBar() {
   const { data: session } = useSession();
 
   const handleLogout = () => {
-    signOut({ callbackUrl: '/admin-portal' }); // Update logout callback URL
+    signOut({ callbackUrl: '/admin-portal' }); 
   };
 
   return (
-    <nav className="bg-white border-b border-gray-200 py-4 fixed top-0 left-0 right-0 z-10 shadow-sm">
-      <div className="container mx-auto flex justify-between items-center px-4">
-        <div className="flex items-center space-x-5">
+    <nav className="bg-white border-b border-gray-200 h-16 fixed top-0 left-0 right-0 z-10 shadow-sm">
+      <div className="container mx-auto h-full flex justify-between items-center px-4">
+        {/* Left side - Navigation Links */}
+        <div className="flex items-center gap-8">
           <Link 
             href="/" 
             className="text-gray-800 hover:text-black transition-colors duration-200 font-medium"
@@ -41,9 +41,11 @@ function NavBar() {
             </Link>
           )}
         </div>
+
+        {/* Right side - User Info & Logout */}
         <div>
           {session?.user && (
-            <div className="flex items-center space-x-6">
+            <div className="flex items-center gap-8">
               <span className="text-gray-600">{session.user.email}</span>
               <button 
                 onClick={handleLogout}
@@ -59,7 +61,6 @@ function NavBar() {
   );
 }
 
-// Wrapper component to provide session
 function Providers({ children }: { children: React.ReactNode }) {
   return (
     <SessionProvider>
