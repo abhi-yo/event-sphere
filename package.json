@@ -38,6 +38,7 @@
     "ioredis": "^5.4.1",
     "lucide-react": "^0.445.0",
     "mongoose": "^8.7.0",
+    "motion": "^12.4.5",
     "next": "^14.2.23",
     "next-auth": "^4.24.11",
     "node-cache": "^5.1.2",

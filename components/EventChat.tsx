@@ -21,7 +21,7 @@ interface EventChatProps {
   eventId: string;
 }
 
-const MESSAGE_EXPIRATION_TIME = 30 * 1000; // 30 seconds in milliseconds
+const MESSAGE_EXPIRATION_TIME = 30 * 1000;
 
 const EventChat: React.FC<EventChatProps> = ({ eventId }) => {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -76,8 +76,7 @@ const EventChat: React.FC<EventChatProps> = ({ eventId }) => {
       );
     };
 
-    const intervalId = setInterval(checkMessageExpiration, 5000); // Check every 5 seconds
-
+    const intervalId = setInterval(checkMessageExpiration, 5000);
     return () => clearInterval(intervalId);
   }, []);
 
@@ -98,53 +97,64 @@ const EventChat: React.FC<EventChatProps> = ({ eventId }) => {
   if (!isConnected) {
     return (
       <div className="flex items-center justify-center h-full">
-        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-purple-50"></div>
         <span className="ml-2">Connecting to chat...</span>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col h-[500px] border rounded-lg shadow-lg bg-white">
-      <ScrollArea className="flex-1 p-4" ref={chatContainerRef}>
-        <div className="space-y-4">
-          {messages.map((message) => (
-            <div
-              key={message.id}
-              className={`flex ${message.userId === userId ? 'justify-end' : 'justify-start'}`}
-            >
-              <div className={`flex ${message.userId === userId ? 'flex-row-reverse' : 'flex-row'} items-end max-w-[70%]`}>
-                <Avatar className="w-8 h-8">
-                  <AvatarFallback>{message.userId.slice(0, 2).toUpperCase()}</AvatarFallback>
-                </Avatar>
-                <div className={`mx-2 p-3 rounded-lg ${
-                  message.userId === userId ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-800'
-                }`}>
-                  <p className="text-sm">{message.text}</p>
-                  <span className={`text-xs ${message.userId === userId ? 'text-blue-200' : 'text-gray-500'}`}>
-                    {new Date(message.timestamp).toLocaleTimeString()}
-                  </span>
+    <div className="mx-4 mt-8">
+      <div className="bg-white rounded-3xl shadow-lg flex flex-col h-[500px]">
+        <ScrollArea 
+          className="flex-1 px-6" 
+          ref={chatContainerRef}
+        >
+          <div className="py-4 space-y-4">
+            {messages.map((message) => (
+              <div
+                key={message.id}
+                className={`flex ${message.userId === userId ? 'justify-end' : 'justify-start'}`}
+              >
+                <div className={`flex ${message.userId === userId ? 'flex-row-reverse' : 'flex-row'} items-end max-w-[70%] gap-2`}>
+                  <Avatar className="w-8 h-8">
+                    <AvatarFallback className="bg-purple-50 text-gray-700">
+                      {message.userId.slice(0, 2).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className={`p-3 rounded-xl ${
+                    message.userId === userId ? 'bg-purple-50 text-gray-700' : 'bg-gray-100 text-gray-800'
+                  }`}>
+                    <p className="text-sm">{message.text}</p>
+                    <span className={`text-xs ${message.userId === userId ? 'text-gray-500' : 'text-gray-500'}`}>
+                      {new Date(message.timestamp).toLocaleTimeString()}
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
+        </ScrollArea>
+        <div className="p-6 border-t">
+          <form onSubmit={sendMessage} className="flex space-x-2">
+            <Input
+              type="text"
+              value={inputMessage}
+              onChange={(e) => setInputMessage(e.target.value)}
+              className="flex-1 rounded-full focus:ring-purple-50 focus:border-purple-50"
+              placeholder="Type a message..."
+            />
+            <Button 
+              type="submit" 
+              disabled={!isConnected}
+              className="rounded-full bg-purple-50 hover:bg-purple-100 text-gray-700"
+            >
+              <Send className="w-4 h-4 mr-2" />
+              Send
+            </Button>
+          </form>
         </div>
-      </ScrollArea>
-      <form onSubmit={sendMessage} className="p-4 border-t">
-        <div className="flex space-x-2">
-          <Input
-            type="text"
-            value={inputMessage}
-            onChange={(e) => setInputMessage(e.target.value)}
-            className="flex-1"
-            placeholder="Type a message..."
-          />
-          <Button type="submit" disabled={!isConnected}>
-            <Send className="w-4 h-4 mr-2" />
-            Send
-          </Button>
-        </div>
-      </form>
+      </div>
     </div>
   );
 };
