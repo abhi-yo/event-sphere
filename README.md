@@ -1,6 +1,6 @@
-# Hyper-Local Event Discovery
+# Event Sphere
 
-Hyper-Local Event Discovery is an open-source project aimed at helping users find and share events in their immediate vicinity. This application allows for the discovery and creation of highly localized events, fostering community engagement and local activities.
+Event Sphere is an open-source project aimed at helping users find and share events in their immediate vicinity. This application allows for the discovery and creation of highly localized events, fostering community engagement and local activities.
 
 ## Features
 
