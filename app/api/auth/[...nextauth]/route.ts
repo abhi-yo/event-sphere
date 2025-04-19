@@ -1,15 +1,20 @@
-import NextAuth, { AuthOptions, Session, User } from "next-auth";
+import NextAuth from "next-auth";
 import { JWT } from "next-auth/jwt";
+import type { NextAuthOptions, Session } from "next-auth";
+import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { compare } from "bcryptjs";
 import { connectToDatabase } from "@/lib/mongodb";
-import { User as UserModel } from "@/models/User";
+import { User } from "@/models/User";
 
+// Extend the session types
 declare module "next-auth" {
   interface Session {
     user: {
       id: string;
+      name?: string | null;
       email: string;
+      image?: string | null;
     }
   }
   interface User {
@@ -18,12 +23,24 @@ declare module "next-auth" {
   }
 }
 
-export const authOptions: AuthOptions = {
+declare module "next-auth/jwt" {
+  interface JWT {
+    id: string;
+    email: string;
+  }
+}
+
+// Define auth options as a constant, not exported
+const authOptions: NextAuthOptions = {
   providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID || "",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
+    }),
     CredentialsProvider({
-      name: "Credentials",
+      name: "credentials",
       credentials: {
-        email: { label: "Email", type: "text" },
+        email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
@@ -33,8 +50,8 @@ export const authOptions: AuthOptions = {
 
         await connectToDatabase();
 
-        const user = await UserModel.findOne({ 
-          email: credentials.email 
+        const user = await User.findOne({
+          email: credentials.email
         });
 
         if (!user) {
@@ -54,11 +71,19 @@ export const authOptions: AuthOptions = {
           id: user._id.toString(),
           email: user.email,
         };
-      },
+      }
     }),
   ],
+  session: {
+    strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60, // 30 days
+  },
+  secret: process.env.NEXTAUTH_SECRET || "hyperlocaleventappdefaultsecretkey",
+  pages: {
+    signIn: "/login",
+  },
   callbacks: {
-    async jwt({ token, user }: { token: JWT; user?: User }) {
+    async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
         token.email = user.email;
@@ -72,12 +97,6 @@ export const authOptions: AuthOptions = {
       }
       return session;
     },
-  },
-  pages: {
-    signIn: '/admin-portal',
-  },
-  session: {
-    strategy: "jwt" as const,
   },
 };
 

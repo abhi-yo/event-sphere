@@ -1,8 +1,15 @@
 "use client";
+
 import EventForm from "@/components/EventForm";
-import EventMap from "@/components/EventMap";
-import { useAuth } from "@/contexts/AuthContext";
 import { useState } from "react";
+import dynamic from "next/dynamic";
+import { useAuth } from "@/contexts/AuthContext";
+
+// Import EventMap dynamically with SSR disabled
+const EventMap = dynamic(() => import("../../components/EventMap"), { 
+  ssr: false,
+  loading: () => <div className="w-full h-[400px] bg-gray-100 rounded-lg flex items-center justify-center">Loading map...</div>
+});
 
 export default function CreateEventPage() {
   const { user } = useAuth();
