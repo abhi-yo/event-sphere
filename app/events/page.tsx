@@ -2,21 +2,17 @@
 import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import EventList from "@/components/EventList";
+import { Event } from "@/lib/types";
 
 // Import EventMap dynamically with SSR disabled
-const EventMap = dynamic(() => import("../../components/EventMap"), { 
+const EventMap = dynamic(() => import("../../components/EventMap"), {
   ssr: false,
-  loading: () => <div className="w-full h-[600px] bg-gray-100 rounded-lg flex items-center justify-center">Loading map...</div>
+  loading: () => (
+    <div className="w-full h-[600px] bg-gray-100 rounded-lg flex items-center justify-center">
+      Loading map...
+    </div>
+  ),
 });
-
-interface Event {
-  _id: string;
-  title: string;
-  location: {
-    type: string;
-    coordinates: [number, number];
-  };
-}
 
 export default function EventsPage() {
   const [events, setEvents] = useState<Event[]>([]);
@@ -26,12 +22,12 @@ export default function EventsPage() {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await fetch('/api/events');
+        const response = await fetch("/api/events");
         const data = await response.json();
         setEvents(data);
         setLoading(false);
       } catch (error) {
-        console.error('Error fetching events:', error);
+        console.error("Error fetching events:", error);
         setLoading(false);
       }
     };
@@ -51,10 +47,7 @@ export default function EventsPage() {
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
           </div>
         ) : (
-          <EventMap 
-            events={events} 
-            selectedEvent={selectedEvent} 
-          />
+          <EventMap events={events} selectedEvent={selectedEvent} />
         )}
       </div>
       <EventList onEventSelect={handleEventSelect} />

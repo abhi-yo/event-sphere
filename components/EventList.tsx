@@ -1,28 +1,18 @@
-"use client"
+"use client";
 
-import React, { useEffect, useState } from 'react';
-import { Inter } from 'next/font/google';
-import { ArrowRight, Calendar, MapPin, MessageCircle } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
-import { SparklesText } from './magicui/sparkles-text';
-import EventChat from './EventChat';
+import React, { useEffect, useState } from "react";
+import { Inter } from "next/font/google";
+import { ArrowRight, Calendar, MapPin, MessageCircle } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { SparklesText } from "./magicui/sparkles-text";
+import EventChat from "./EventChat";
+import { Event } from "@/lib/types";
 
-const inter = Inter({ 
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
-  display: 'swap',
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
 });
-
-interface Event {
-  _id: string;
-  title: string;
-  description: string;
-  date: string;
-  location: {
-    type: string;
-    coordinates: [number, number];
-  };
-}
 
 interface EventListProps {
   onEventSelect?: (event: Event) => void;
@@ -50,16 +40,16 @@ export default function EventList({ onEventSelect }: EventListProps) {
   const formatDateTime = (dateString: string) => {
     const date = new Date(dateString);
     return {
-      date: date.toLocaleDateString('en-US', {
-        month: 'long',
-        day: 'numeric',
-        year: 'numeric'
+      date: date.toLocaleDateString("en-US", {
+        month: "long",
+        day: "numeric",
+        year: "numeric",
       }),
-      time: date.toLocaleTimeString('en-US', {
-        hour: 'numeric',
-        minute: '2-digit',
-        hour12: true
-      })
+      time: date.toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true,
+      }),
     };
   };
 
@@ -74,12 +64,13 @@ export default function EventList({ onEventSelect }: EventListProps) {
   return (
     <div className={`${inter.className} max-w-6xl mx-auto px-4 py-8`}>
       <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold mb-4">
+        <h1 className="text-4xl font-bold mb-4 font-heading">
           <SparklesText text="Discover Amazing Events" className="text-4xl" />
         </h1>
         <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-          Join live chat rooms, explore interactive maps, and discover extraordinary events
-          happening around you. Connect with like-minded people instantly.
+          Join live chat rooms, explore interactive maps, and discover
+          extraordinary events happening around you. Connect with like-minded
+          people instantly.
         </p>
       </div>
 
@@ -87,24 +78,30 @@ export default function EventList({ onEventSelect }: EventListProps) {
         {events.map((event) => {
           const { date, time } = formatDateTime(event.date);
           return (
-            <Card 
+            <Card
               key={event._id}
               className={`group relative overflow-hidden bg-white transition-all duration-300 hover:shadow-lg
-                ${selectedEventId === event._id ? 'ring-2 ring-[#7C3AED]' : ''}
+                ${selectedEventId === event._id ? "ring-2 ring-[#7C3AED]" : ""}
               `}
             >
               <CardContent className="p-6">
                 <div className="absolute top-0 right-0 w-24 h-24 -mr-8 -mt-8 bg-[#7C3AED]/5 rounded-full transition-transform group-hover:scale-150" />
-                
-                <h3 className="text-xl font-semibold mb-3 relative">{event.title}</h3>
-                <p className="text-gray-600 mb-4 line-clamp-2 relative">{event.description}</p>
-                
+
+                <h3 className="text-xl font-semibold mb-3 relative font-heading">
+                  {event.title}
+                </h3>
+                <p className="text-gray-600 mb-4 line-clamp-2 relative">
+                  {event.description}
+                </p>
+
                 <div className="space-y-3 text-sm text-gray-500 relative">
                   <div className="flex items-center">
                     <Calendar className="w-4 h-4 mr-2 text-[#7C3AED]" />
-                    <span>{date} at {time}</span>
+                    <span>
+                      {date} at {time}
+                    </span>
                   </div>
-                  
+
                   <div className="flex items-center">
                     <MapPin className="w-4 h-4 mr-2 text-[#7C3AED]" />
                     <span>View on Map</span>
@@ -117,7 +114,7 @@ export default function EventList({ onEventSelect }: EventListProps) {
                 </div>
 
                 <div className="mt-6 pt-4 border-t border-gray-100 flex justify-between items-center relative">
-                  <button 
+                  <button
                     className="flex items-center text-sm font-medium bg-[#7C3AED] hover:bg-[#6D28D9] text-white px-4 py-2 rounded-full transition-all"
                     onClick={(e) => {
                       e.stopPropagation();
@@ -145,8 +142,8 @@ export default function EventList({ onEventSelect }: EventListProps) {
         </div>
       )}
       {selectedEventId && (
-        <EventChat 
-          eventId={selectedEventId} 
+        <EventChat
+          eventId={selectedEventId}
           isOpen={isChatOpen}
           onOpenChange={setIsChatOpen}
         />

@@ -9,20 +9,21 @@ This document explains how real-time chat functionality is implemented in the Ev
 ### Technology Stack
 
 - **Redis**: In-memory data store used for message persistence and pub/sub capabilities
-- **Socket.IO**: Real-time bidirectional communication library 
+- **Socket.IO**: Real-time bidirectional communication library
 - **Next.js API Routes**: Backend endpoints for WebSocket connections and message retrieval
 - **React Context**: Frontend state management for socket connections
 
 ### System Overview
 
 ```
-┌─────────────┐     WebSocket     ┌───────────┐     ┌───────────┐
+┌─────────────┐     WebSocket      ┌───────────┐     ┌───────────┐
 │ React Client │<------------------>│ Socket.IO │<---->│   Redis   │
 │  Components  │      (ws://)      │  Server   │     │ Data Store │
 └─────────────┘                    └───────────┘     └───────────┘
 ```
 
 The chat system allows users to:
+
 - Join event-specific chat rooms
 - Send and receive real-time messages
 - See messages from other participants instantly
@@ -42,8 +43,8 @@ Redis serves as the persistence layer for chat messages with an automatic expira
 
 ```typescript
 // Message storage in Redis
-await redis.lpush(redisKey, JSON.stringify(message))
-await redis.expire(redisKey, 30) // Set expiry to 30 seconds
+await redis.lpush(redisKey, JSON.stringify(message));
+await redis.expire(redisKey, 30); // Set expiry to 30 seconds
 ```
 
 ### 2. Socket.IO Integration
@@ -57,15 +58,15 @@ Socket.IO provides real-time communication between clients and server:
 
 ```typescript
 // Socket.IO server events
-io.on('connection', (socket) => {
-  socket.on('join', (eventId: string) => {
+io.on("connection", (socket) => {
+  socket.on("join", (eventId: string) => {
     socket.join(eventId);
   });
-  
-  socket.on('message', async ({ eventId, message }) => {
+
+  socket.on("message", async ({ eventId, message }) => {
     // Store in Redis then broadcast to room
-    await redis.lpush(`event:${eventId}:messages`, JSON.stringify(message))
-    io.to(eventId).emit('message', message)
+    await redis.lpush(`event:${eventId}:messages`, JSON.stringify(message));
+    io.to(eventId).emit("message", message);
   });
 });
 ```
@@ -86,11 +87,11 @@ export const useSocket = () => useContext(SocketContext);
 // Listening for messages in the EventChat component
 useEffect(() => {
   if (socket && isConnected) {
-    socket.emit('join', eventId);
-    socket.on('message', handleMessage);
+    socket.emit("join", eventId);
+    socket.on("message", handleMessage);
     return () => {
-      socket.off('message', handleMessage);
-      socket.emit('leave', eventId);
+      socket.off("message", handleMessage);
+      socket.emit("leave", eventId);
     };
   }
 }, [socket, isConnected, eventId]);
@@ -129,15 +130,15 @@ The system includes diagnostic tools to monitor Redis performance:
 
 ```jsx
 // Example of using the chat component in a page
-import EventChat from '../components/EventChat';
+import EventChat from "../components/EventChat";
 
 function EventPage({ eventId }) {
   const [chatOpen, setChatOpen] = useState(false);
-  
+
   return (
     <div>
       <button onClick={() => setChatOpen(true)}>Open Chat</button>
-      <EventChat 
+      <EventChat
         eventId={eventId}
         isOpen={chatOpen}
         onOpenChange={setChatOpen}
@@ -163,16 +164,19 @@ function EventPage({ eventId }) {
 To set up the chat system locally:
 
 1. Configure Redis:
+
    ```
    REDIS_URL=redis://localhost:6379
    ```
 
 2. Install dependencies:
+
    ```bash
    npm install
    ```
 
 3. Run the development server:
+
    ```bash
    npm run dev
    ```
