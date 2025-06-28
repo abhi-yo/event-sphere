@@ -1,10 +1,11 @@
-"use client";
-
 import { Inter, Bricolage_Grotesque } from "next/font/google";
-import { SessionProvider } from "next-auth/react";
-import { SocketProvider } from "../contexts/SocketContext";
 import { Header } from "@/components/ui/header";
+import { Providers } from "./providers";
+import { StructuredData } from "./structured-data";
+import { metadata, viewport } from "./metadata";
 import "./globals.css";
+
+export { metadata, viewport };
 
 const inter = Inter({
   subsets: ["latin"],
@@ -20,14 +21,6 @@ const bricolageGrotesque = Bricolage_Grotesque({
   variable: "--font-bricolage",
 });
 
-function Providers({ children }: { children: React.ReactNode }) {
-  return (
-    <SessionProvider>
-      <SocketProvider>{children}</SocketProvider>
-    </SessionProvider>
-  );
-}
-
 export default function RootLayout({
   children,
 }: {
@@ -39,10 +32,10 @@ export default function RootLayout({
       className={`${inter.variable} ${bricolageGrotesque.variable}`}
     >
       <head>
-        <meta
-          name="viewport"
-          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-        />
+        <link rel="icon" href="/favicon.jpg" type="image/jpeg" />
+        <link rel="apple-touch-icon" href="/favicon.jpg" />
+        <meta name="theme-color" content="#7C3AED" />
+        <StructuredData />
       </head>
       <body className={inter.className}>
         <Providers>
