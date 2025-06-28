@@ -31,13 +31,8 @@ export default function RootLayout({
       lang="en"
       className={`${inter.variable} ${bricolageGrotesque.variable}`}
     >
-      <head>
-        <link rel="icon" href="/favicon.jpg" type="image/jpeg" />
-        <link rel="apple-touch-icon" href="/favicon.jpg" />
-        <meta name="theme-color" content="#7C3AED" />
-        <StructuredData />
-      </head>
       <body className={inter.className}>
+        <StructuredData />
         <Providers>
           <Header />
           {children}
