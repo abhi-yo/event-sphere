@@ -62,7 +62,10 @@ export default function EventList({ onEventSelect }: EventListProps) {
   }
 
   return (
-    <div className={`${inter.className} max-w-6xl mx-auto px-4 py-8`}>
+    <div
+      id="discover-amazing-events"
+      className={`${inter.className} max-w-6xl mx-auto px-4 py-8`}
+    >
       <div className="text-center mb-12">
         <h1 className="text-4xl font-bold mb-4 font-heading">
           <SparklesText text="Discover Amazing Events" className="text-4xl" />

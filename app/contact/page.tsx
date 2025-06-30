@@ -1,37 +1,44 @@
 "use client";
 
-import { useState } from 'react';
+import { useState } from "react";
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    subject: '',
-    message: ''
+    name: "",
+    email: "",
+    subject: "",
+    message: "",
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Handle form submission here
-    console.log('Form submitted:', formData);
+    console.log("Form submitted:", formData);
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
   return (
     <main className="container mx-auto px-4 pt-24 pb-16">
       <div className="max-w-2xl mx-auto">
-        <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8">Contact Us</h1>
-        
+        <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8">
+          Contact Us
+        </h1>
+
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="name"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Name
             </label>
             <input
@@ -46,7 +53,10 @@ export default function ContactPage() {
           </div>
 
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Email
             </label>
             <input
@@ -61,7 +71,10 @@ export default function ContactPage() {
           </div>
 
           <div>
-            <label htmlFor="subject" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="subject"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Subject
             </label>
             <input
@@ -76,7 +89,10 @@ export default function ContactPage() {
           </div>
 
           <div>
-            <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="message"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Message
             </label>
             <textarea
@@ -100,4 +116,4 @@ export default function ContactPage() {
       </div>
     </main>
   );
-} 
+}

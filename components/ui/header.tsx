@@ -12,8 +12,11 @@ import {
 import { Menu, MoveRight, X } from "lucide-react";
 import { useState } from "react";
 import Link from "next/link";
+import { useAuth } from "@/contexts/AuthContext";
 
 function Header() {
+  const { user } = useAuth();
+  const isAdmin = user && user.isAdmin;
   const navigationItems = [
     {
       title: "Home",
@@ -27,7 +30,7 @@ function Header() {
       items: [
         {
           title: "Browse Events",
-          href: "/events",
+          href: "/events#discover-amazing-events",
         },
         {
           title: "Create Event",
@@ -35,11 +38,12 @@ function Header() {
         },
         {
           title: "My Events",
-          href: "/my-events",
+          href: isAdmin ? "/my-events" : "#",
+          disabled: !isAdmin,
         },
         {
           title: "Event Map",
-          href: "/map",
+          href: "/events",
         },
       ],
     },
@@ -49,19 +53,19 @@ function Header() {
       items: [
         {
           title: "Chat Rooms",
-          href: "/chat",
+          href: "/events",
         },
         {
           title: "About Us",
-          href: "/about",
+          href: "/#everything-you-need",
         },
         {
           title: "Help Center",
-          href: "/help",
+          href: "mailto:akshatsing11@gmail.com",
         },
         {
           title: "Contact",
-          href: "/contact",
+          href: "mailto:akshatsing11@gmail.com",
         },
       ],
     },
@@ -114,16 +118,26 @@ function Header() {
                             </Button>
                           </div>
                           <div className="flex flex-col text-base h-full justify-end">
-                            {item.items?.map((subItem) => (
-                              <Link
-                                href={subItem.href}
-                                key={subItem.title}
-                                className="flex flex-row justify-between items-center hover:bg-purple-50 py-2 px-4 rounded text-gray-600 hover:text-[#7C3AED]"
-                              >
-                                <span>{subItem.title}</span>
-                                <MoveRight className="w-4 h-4 text-[#7C3AED]" />
-                              </Link>
-                            ))}
+                            {item.items?.map((subItem) =>
+                              subItem.disabled ? (
+                                <span
+                                  key={subItem.title}
+                                  className="flex flex-row justify-between items-center py-2 px-4 rounded text-gray-400 cursor-not-allowed opacity-60"
+                                >
+                                  <span>{subItem.title}</span>
+                                  <MoveRight className="w-4 h-4 text-gray-300" />
+                                </span>
+                              ) : (
+                                <Link
+                                  href={subItem.href}
+                                  key={subItem.title}
+                                  className="flex flex-row justify-between items-center hover:bg-purple-50 py-2 px-4 rounded text-gray-600 hover:text-[#7C3AED]"
+                                >
+                                  <span>{subItem.title}</span>
+                                  <MoveRight className="w-4 h-4 text-[#7C3AED]" />
+                                </Link>
+                              )
+                            )}
                           </div>
                         </div>
                       </NavigationMenuContent>
@@ -193,16 +207,30 @@ function Header() {
                       </p>
                     )}
                     {item.items &&
-                      item.items.map((subItem) => (
-                        <Link
-                          key={subItem.title}
-                          href={subItem.href}
-                          className="flex justify-between items-center text-gray-600 hover:text-[#7C3AED]"
-                        >
-                          <span className="text-base">{subItem.title}</span>
-                          <MoveRight className="w-5 h-5 stroke-1" />
-                        </Link>
-                      ))}
+                      item.items.map((subItem) =>
+                        subItem.disabled ? (
+                          <span
+                            key={subItem.title}
+                            className="flex justify-between items-center text-gray-400 cursor-not-allowed opacity-60"
+                          >
+                            <span className="text-base font-medium">
+                              {subItem.title}
+                            </span>
+                            <MoveRight className="w-5 h-5 stroke-1 text-gray-300" />
+                          </span>
+                        ) : (
+                          <Link
+                            key={subItem.title}
+                            href={subItem.href}
+                            className="flex justify-between items-center text-gray-600 hover:text-[#7C3AED]"
+                          >
+                            <span className="text-base font-medium">
+                              {subItem.title}
+                            </span>
+                            <MoveRight className="w-5 h-5 stroke-1 text-[#7C3AED]" />
+                          </Link>
+                        )
+                      )}
                   </div>
                 </div>
               ))}

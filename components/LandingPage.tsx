@@ -280,6 +280,7 @@ export default function LandingPage() {
 
           {/* Features Section */}
           <div
+            id="everything-you-need"
             className="max-w-7xl mx-auto px-4"
             style={{
               transform: isMobile ? "translateY(0px)" : "translateY(-60px)",
@@ -336,7 +337,7 @@ export default function LandingPage() {
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-gray-600 text-base">
-              © 2024 Event Sphere. All rights reserved.
+              © 2025 Event Sphere. All rights reserved.
             </p>
             <div className="flex items-center gap-8">
               <Link
@@ -351,12 +352,12 @@ export default function LandingPage() {
               >
                 Privacy
               </Link>
-              <Link
-                href="/contact"
+              <a
+                href="mailto:akshatsing11@gmail.com"
                 className="text-base text-gray-600 hover:text-gray-900"
               >
                 Contact
-              </Link>
+              </a>
             </div>
           </div>
         </div>
